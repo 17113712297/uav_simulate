@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- ============================================================================== -->
+    <!-- 模块1：可配置参数定义 -->
+    <!-- 定义仿真环境和无人机启动相关的可配置参数，允许用户通过命令行修改 -->
+    <!-- 例如：roslaunch px4 indoor1.launch gui:=false paused:=false -->
+    <!-- ============================================================================== -->
+
+    <!-- 无人机模型和世界配置参数 -->
+    <arg name="est" default="ekf2"/> <!-- [未被调用]将无人机的位置和姿态估计器设置为默认使用EKF2算法 -->
+    <arg name="world" default="$(find uav_simulate)/worlds/test_world.world"/> <!-- Gazebo 世界文件的路径，默认为 test_world.world -->
+
+    <!-- Gazebo 仿真器配置参数 -->
+    <arg name="gui" default="true"/> <!-- 是否启动带有图形用户界面的Gazebo，默认为 true -->
+    <arg name="debug" default="false"/> <!-- 是否启用Gazebo调试模式（需要gdb支持），默认为 false -->
+    <arg name="verbose" default="false"/> <!-- 是否启用Gazebo详细输出，默认为 false -->
+    <arg name="paused" default="false"/> <!-- Gazebo 启动时是否处于暂停状态，默认为 false -->
+
+    <!-- ============================================================================== -->
+    <!-- 模块2：启动 Gazebo 仿真环境 -->
+    <!-- 包含ROS Gazebo 包中的 empty_world.launch 文件，并根据上述参数配置 Gazebo 行为和加载指定世界 -->
+    <!-- ============================================================================== -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(arg world)"/> <!-- 将文件名称传递给empty_world.launch -->
+        <arg name="gui" value="$(arg gui)"/> <!-- 将 GUI 参数传递给 empty_world.launch -->
+        <arg name="debug" value="$(arg debug)"/> <!-- 将调试参数传递给 empty_world.launch -->
+        <arg name="verbose" value="$(arg verbose)"/> <!-- 将输出参数传递给empty_world.launch -->
+        <arg name="paused" value="$(arg paused)"/> <!-- 将暂停参数传递给 empty_world.launch -->
+    </include>
+
+    <!-- ============================================================================== -->
+    <!-- 模块3：启动单个无人机 (solo) -->
+    <!-- 在 Gazebo 环境中生成一个无人机实例，并为其配置命名空间、ID、初始位置和通信端口 -->
+    <!-- ============================================================================== -->
+    <group ns="solo_0"> <!-- 为此无人机实例创建一个名为 "solo_0" 的命名空间 -->
+        <!-- 无人机配置参数 -->
+        <arg name="ID" value="0"/> <!-- 此无人机的唯一 ID，默认为 0 -->
+        <arg name="ID_in_group" value="0"/> <!-- 在无人机编队或组中的 ID（如果适用），默认为 0 -->
+        <!-- 包含用于生成单个无人机的 launch 文件 -->
+        <include file="$(find uav_simulate)/launch/single_vehicle_spawn_xtd.launch">
+            <!-- 无人机初始生成位置和姿态 -->
+            <arg name="x" value="0"/> <!-- 生成无人机的 X 坐标，默认为 0 -->
+            <arg name="y" value="7.5"/> <!-- 生成无人机的 Y 坐标，默认为 0 -->
+            <arg name="z" value="0"/> <!-- 生成无人机的 Z 坐标，默认为 0 -->
+            <arg name="R" value="0"/> <!-- 生成无人机的横滚方向（Roll），默认为 0 -->
+            <arg name="P" value="0"/> <!-- 生成无人机的俯仰方向（Pitch），默认为 0 -->
+            <arg name="Y" value="-1.6"/> <!-- 生成无人机的偏航方向（Yaw），默认为 0 -->
+            <!-- 无人机模型类型和 SDF 文件名称 -->
+            <arg name="vehicle" value="solo"/> <!-- 要生成的无人机类型，默认为 solo -->
+            <arg name="sdf" value="solo"/> <!-- 无人机的 SDF 模型名称，默认为 solo -->
+            <!-- MAVLink 通信端口配置 -->
+            <arg name="mavlink_udp_port" value="18570"/> <!-- 用于MAVLink通信的UDP端口，默认为 18570 -->
+            <arg name="mavlink_tcp_port" value="4560"/> <!-- 用于MAVLink通信的TCP端口，默认为4560 -->
+            <!-- 将无人机 ID 参数传递给生成脚本 -->
+            <arg name="ID" value="$(arg ID)"/> <!-- 传递无人机唯一 ID -->
+            <arg name="ID_in_group" value="$(arg ID_in_group)"/> <!-- 传递无人机在组中的 ID -->
+        </include>
+    </group>
+</launch>

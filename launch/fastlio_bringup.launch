@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 包含 uav_simulate 包中的 mag_MID360.launch -->
+    <include file="$(find uav_simulate)/launch/msg_MID360.launch" />
+    <!-- 包含 FAST_LIO 包中的 mapping_mid360.launch -->
+    <include file="$(find fast_lio)/launch/mapping_mid360.launch" />   <!-- 注意是fast_lio不是FAST_LIO -->
+    <!-- 包含 uav_simulate 包中的 px4.launch -->
+    <include file="$(find uav_simulate)/launch/px4.launch" />
+    <!-- 启动 lidar_transfer.py 脚本 -->
+    <node name="lidar_transfer_node" pkg="uav_simulate" type="lidar_transfer.py" output="screen" />
+</launch>

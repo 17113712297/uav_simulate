@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- *************************************************************** -->
+    <!-- 启动MAVROS -->
+    <!-- solo -->
+    <group ns="solo_0">
+
+        <!-- MAVROS配置 -->
+        <arg name="ID" value="0"/> <!-- 此无人机的唯一 ID -->
+        <arg name="fcu_url" default="udp://:24540@localhost:34580"/> <!-- 飞行控制单元 (FCU) URL，用于 MAVROS 连接 -->
+
+        <!-- MAVROS启动 -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/> <!-- 将 FCU URL 传递给 MAVROS -->
+            <!-- <arg name="gcs_url" value=""/>  GCS（地面控制站）URL（为空表示 MAVROS 不连接 GCS） -->
+            <arg name="gcs_url" value="udp://@10.100.242.215:14550"/> <!-- 这里填入你的手机IP -->
+            <arg name="tgt_system" value="$(eval 1 + arg('ID'))"/> <!-- MAVROS 的目标系统 ID（1 + 无人机 ID） -->
+            <arg name="tgt_component" value="1"/> <!-- MAVROS 的目标组件 ID -->
+        </include>
+
+    </group>
+    <!-- *************************************************************** -->
+</launch>
